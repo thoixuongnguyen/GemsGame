@@ -1,0 +1,8 @@
+/GemsGame/.vs
+Library
+Logs
+obj
+/GemsGame/.vs/*.sln
+/GemsGame/*.csproj
+/GemsGame/*.vsconfig
+/GemsGame/Temp

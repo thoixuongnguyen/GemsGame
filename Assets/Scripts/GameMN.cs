@@ -17,7 +17,7 @@ public class GameMN : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        AddEvent();
+        AddEvent();  
     }
 
     void AddEvent()

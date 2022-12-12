@@ -188,6 +188,8 @@ MonoBehaviour:
     type: 3}
   killedPiece: {fileID: 8765291734674596714, guid: 60641108e398157419ef6319243e5af9,
     type: 3}
+  specialPiece: {fileID: 1518041853133565531, guid: c179ff21f60a779488d3f3c48c5d59b0,
+    type: 3}
 --- !u!114 &262448283
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -14,6 +14,7 @@ public class Match : MonoBehaviour
     [Header("Prefabs")]
     public GameObject nodePiece;
     public GameObject killedPiece;
+    public GameObject specialPiece;
 
     int width = 8;
     int height = 8;
@@ -31,6 +32,10 @@ public class Match : MonoBehaviour
     {
         StartGame();
     }
+    void UpdateFinished()
+    {
+
+    }    
 
     void Update()
     {
@@ -63,6 +68,41 @@ public class Match : MonoBehaviour
                 if (wasFlipped) //If flipped
                     FlipPieces(piece.index, flippedPiece.index, false); //Flip back
             }
+            if (connected.Count > 3)
+            {
+                Point spcPoint = new Point(0,0);
+                foreach (Point pnt in connected) //Remove the node pieces connected
+                {
+                    KillPiece(pnt);
+                    
+                    Node node = getNodeAtPoint(pnt);
+                    NodePiece nodePiece = node.getPiece();
+                    if (nodePiece != null)
+                    {
+                        nodePiece.gameObject.SetActive(false);
+                        dead.Add(nodePiece);
+                    }
+                    node.SetPiece(null);
+                    spcPoint = pnt;
+                }
+                Node nodee = getNodeAtPoint(new Point(spcPoint.x, spcPoint.y));
+
+                int val = 5;
+                GameObject p = Instantiate(specialPiece, gameBoard);
+                NodePiece piecee = p.GetComponent<NodePiece>();
+                RectTransform rect = p.GetComponent<RectTransform>();
+                rect.anchoredPosition = new Vector2(64 + (128 * spcPoint.x), -64 - (128 * spcPoint.y));
+                piecee.Initialize(val, new Point(spcPoint.x, spcPoint.y));
+                nodee.SetPiece(piece);
+                update.Add(piecee);
+                finishedUpdating = new List<NodePiece>();
+                for (int h = 0; h < update.Count; h++)
+                {
+                    piecee = update[h];
+                    if (!piecee.UpdatePiece()) finishedUpdating.Add(piecee);
+                }
+                ApplyGravityToBoard();
+            }    
             else //If made a match
             {
                 foreach (Point pnt in connected) //Remove the node pieces connected
@@ -83,6 +123,25 @@ public class Match : MonoBehaviour
 
             flipped.Remove(flip); //Remove the flip after update
             update.Remove(piece);
+        }
+    }
+    void InstantiateBoard()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                Node node = getNodeAtPoint(new Point(x, y));
+
+                int val = node.value;
+                if (val <= 0) continue;
+                GameObject p = Instantiate(nodePiece, gameBoard);
+                NodePiece piece = p.GetComponent<NodePiece>();
+                RectTransform rect = p.GetComponent<RectTransform>();
+                rect.anchoredPosition = new Vector2(64 + (128 * x), -64 - (128 * y));
+                piece.Initialize(val, new Point(x, y), pieces[val - 1]);
+                node.SetPiece(piece);
+            }
         }
     }
 
@@ -212,25 +271,7 @@ public class Match : MonoBehaviour
         }
     }
 
-    void InstantiateBoard()
-    {
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                Node node = getNodeAtPoint(new Point(x, y));
-
-                int val = node.value;
-                if (val <= 0) continue;
-                GameObject p = Instantiate(nodePiece, gameBoard);
-                NodePiece piece = p.GetComponent<NodePiece>();
-                RectTransform rect = p.GetComponent<RectTransform>();
-                rect.anchoredPosition = new Vector2(64 + (128 * x), -64 - (128 * y));
-                piece.Initialize(val, new Point(x, y), pieces[val - 1]);
-                node.SetPiece(piece);
-            }
-        }
-    }
+    
 
     public void ResetPiece(NodePiece piece)
     {
@@ -362,8 +403,8 @@ public class Match : MonoBehaviour
                 AddPoints(ref connected, isConnected(connected[i], false));
         }
 
-       
 
+        
         return connected;
     }
 
